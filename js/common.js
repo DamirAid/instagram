@@ -84,8 +84,8 @@ $(document).ready(function () {
 		$postList.innerHTML = ''
 		data.forEach(el => {
 			$postList.insertAdjacentHTML('afterbegin', `
-			<div class="col-4" id="${el.id}">
-			<div class="instagram-card">
+			<div class="col-4" >
+			<div class="instagram-card" id="${el.id}">
 				<div class="instagram-card-header">
 					<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png"
 						class="instagram-card-user-image" />
@@ -120,15 +120,11 @@ $(document).ready(function () {
 
 	
 		if (e.target.classList.contains('fa-trash-o')) {
-			console.log(e.target.parentNode.parentNode.parentNode.parentNode)
+		
 			$modalDel.style.display = 'block'
-			let index = e.target.parentNode.parentNode.id
+			let index = e.target.parentNode.parentNode.parentNode.parentNode.id
 			
 			$btnYes.setAttribute('id', index)
-		} else if(e.target.classList.contains('fa-trash-o')){
-			$modalDel.style.display = 'block'
-			let index = e.target.parentNode.parentNode.parentNode.id
-			$btnYes.setAttribute('id', index)			
 		}
 	})
 
@@ -138,8 +134,8 @@ $(document).ready(function () {
 			method: 'DELETE',
 		}).then(() => {
 			
-			render(`${API}?_limit=3&_page=${page - 1}`)
-			getPagination('http://localhost:8000/contacts')
+			render()
+		
 		})
 	}
 
