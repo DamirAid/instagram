@@ -1,3 +1,4 @@
+let API = "http://localhost:8000/posts"
 
 $(document).ready(function () {
 	let $btn = document.querySelector('.btn_add')
@@ -70,19 +71,11 @@ $(document).ready(function () {
 
 
 
+//     $(".post_list").html("")
 
-			//ОЧИЩАЕМ ИНПУТЫ
-			$inputs.forEach(el => {
-				el.value = ''
-			})
-		}
-	})
-	//УДАЛИТЬ АЛЕРТ ПОД ИНПУТОМ
-	$inputs.forEach(el => {
-		el.addEventListener('input', () => {
-			el.nextElementSibling.remove() //ошибка в консоли из-за множественного ввода в инпут, на каждом вводе пытается применить remove()
-		})
-	})
+//     $(".post_list").append(`<div id="${i.id} class="col-4">${i.name}</div>`)
+    
+// }
 
 
 	//ПОСТ ЗАПРОС
@@ -100,7 +93,13 @@ $(document).ready(function () {
 		})
 	}
 
-	//РЕНДЕР
+    fetch(API, {
+        method: "POST",
+        headers: {
+            'Content-type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(obj)
+    })
 
 
 
@@ -145,6 +144,20 @@ $(document).ready(function () {
 
 	}
 
+	$(".post_list").append(`
+							<div class="col-4">
+								<div class="instagram-card">
+									<div class="instagram-card-header">
+										<img class="instagram-card-user-image" src="${inpFile.val()}"/>
+										<a class="instagram-card-user-name" href="#">${inpUsername.val()}</a>
+										<div class="instagram-card-time">==========</div>
+									</div>
+								</div>
+							</div>
+							<div class="intagram-card-image">
+								<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png" height="600px" />
+							</div>
+							`)
 
 
 
