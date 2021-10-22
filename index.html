@@ -22,23 +22,24 @@
 					<div class="input-group-prepend">
 						<span class="input-group-text" id="basic-addon1">@</span>
 					</div>
-					<input type="text" class="form-control" placeholder="Username" aria-label="Username"
+					<input type="text" class="form-control" name="username" placeholder="Название поста" aria-label="Username"
 						aria-describedby="basic-addon1">
 				</div>
 				<div class="input-group mb-3 col-6">
-					<div class="input-group-prepend">
-						<span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-					</div>
 					<div class="custom-file">
-						<input type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">
-						<label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+						<label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Choose file</label>
+						<input type="file" name="image" class="form-control custom-file-input" id="inputGroupFile02">
+					
 					</div>
-				</div>
+					<div class="input-group-append">
+						<span class="input-group-text" id="inputGroupFileAddon02">Upload</span>
+					</div>
+				</div>				
 				<div class="input-group col-12">
 					<div class="input-group-prepend">
 						<span class="input-group-text">With textarea</span>
 					</div>
-					<textarea class="form-control" aria-label="With textarea"></textarea>
+					<textarea class="form-control" name="textarea" aria-label="With textarea"></textarea>
 				</div>
 			</div>
 			<div class="d-flex">
@@ -47,40 +48,27 @@
 
 		</div>
 	</div>
+
+
 	<div class="card_block">
 		<div class="container">
-			<div class="row post_list">
-				<div class="col-4">
-					<div class="instagram-card">
-						<div class="instagram-card-header">
-							<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png"
-								class="instagram-card-user-image" />
-							<a class="instagram-card-user-name" href="https://www.instagram.com/followmeto/">followmeto</a>
-							<div class="instagram-card-time">58 min</div>
-						</div>
+			<div class="row post_list">	</div>
+		</div>
+	</div>
 
-						<div class="intagram-card-image">
-							<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png" height="600px" />
-						</div>
-						<div class="instagram-card-content">
-							<p class="likes"><i class="fa fa-heart-o"></i></p>
-							<p><a class="instagram-card-content-user" href="https://www.instagram.com/followmeto/">followmeto</a> So
-								excited
-								to have made it to Lapland! Our first stop was sleeping inside a room made entirely of ice at the Kemi
-								Snow
-								Hotel 😱 Stoked that I've ticked this off my bucket list and never have to do it again... Let's just say
-								the
-								novelty of sleeping in -5 degrees temperature quickly wears off (but hey, it was a COOL experience
-								nonetheless)
-								😜❄️ <a class="hashtag" href="https://www.instagram.com/explore/tags/visitkemi/">#visitkemi</a></p>
-						</div>
-<!-- 
-						<div class="instagram-card-footer">
-							<a class="footer-action-icons" href="#"><i class="fa fa-heart-o"></i></a>
-							<input class="comments-input" type="text" placeholder="Añade un comentario..." />
-							<a class="footer-action-icons" href="#"><i class="fa fa-ellipsis-h"></i></a>
-						</div> -->
-					</div>
+	<div id="modal_delete" class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Вы уверены?</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+	
+				<div class="modal-footer">
+					<button type="button" class="btn btn-success btn_yes">Да</button>
+					<button type="button" class="btn btn-danger btn_no">Нет</button>
 				</div>
 			</div>
 		</div>

@@ -1,34 +1,34 @@
 
 $(document).ready(function () {
-	let $btn = document.querySelector('.btn')
-	let $inputs = document.querySelectorAll('.form_block input.form-control')
-	let $contactList = document.querySelector('.post_list')
+	let $btn = document.querySelector('.btn_add')
+	let $inputs = document.querySelectorAll('.form_block .form-control')
+	let $postList = document.querySelector('.post_list')
 	let page = 1
 	let pageCount = 1	
-	let API = `http://localhost:8000/contacts`
+	let API = `http://localhost:8000/posts`
 
-	render(`${API}?_limit=3&_page=${page}`)
-	getPagination('http://localhost:8000/contacts')
+	render()
+	getPagination('http://localhost:8000/posts')
 
 	$btn.addEventListener('click', () => {
 		// ВАЛИДАЦИЯ
 		$inputs.forEach(el => {
-			if (el.getAttribute('name') === 'Имя' && !el.value.trim() && !el.nextElementSibling) {
+			if (el.getAttribute('name') === 'username' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `			
 					<div class="alert alert-danger" role="alert">
-						Введите имя					
+						Введите название					
 					</div>					
 					`)
-			} else if (el.getAttribute('name') === 'Телефон' && !el.value.trim() && !el.nextElementSibling) {
+			} else if (el.getAttribute('name') === 'image' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `	
 				<div class="alert alert-danger" role="alert">
-					Введите телефон			
+					Загрузите изображение			
 				</div>					
 				`)
-			} else if (el.getAttribute('name') === 'E-mail' && !el.value.trim() && !el.nextElementSibling) {
+			} else if (el.getAttribute('name') === 'textarea' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `		
 				<div class="alert alert-danger" role="alert">
-					Введите e-mail			
+					Введите текст		
 				</div>					
 				`)
 			}
@@ -37,15 +37,13 @@ $(document).ready(function () {
 		if ($inputs[0].value && $inputs[1].value && $inputs[2].value) {
 			// СОЗДАТЬ ОБЪЕКТ, ЕСЛИ ВСЕ ПОЛЯ ЗАПОЛНЕННЫ
 			let obj = {
-				name: $inputs[0].value,
-				phone: $inputs[1].value,
-				email: $inputs[2].value,
-				like: false
+				postname: $inputs[0].value,
+				file: $inputs[1].value,
+				text: $inputs[2].value
 			}
+			console.log(obj)
 			postData(obj)
 
-			render(`${API}?_limit=3&_page=${page}`)
-			getPagination('http://localhost:8000/contacts')
 
 
 			//ОЧИЩАЕМ ИНПУТЫ
@@ -63,45 +61,51 @@ $(document).ready(function () {
 
 
 	//ПОСТ ЗАПРОС
-	function postData(contactItem) {
+	function postData(postItem) {
 
 		fetch(API, {
 			method: 'POST',
-			body: JSON.stringify(contactItem),
+			body: JSON.stringify(postItem),
 			headers: {
 				'Content-Type': 'application/json;charset=utf-8',
 			},
 		}).then(() => {
-			render(`${API}?_limit=3&_page=${page}`)
-			getPagination('http://localhost:8000/contacts')
+			render()
+	
 		})
 	}
 
 	//РЕНДЕР
 
-	async function render(apiUrl) {
-		let res = await fetch(apiUrl)
+	async function render() {
+		let res = await fetch(API)
 		let data = await res.json()
-		console.log(apiUrl)
-		$contactList.innerHTML = ''
+
+		$postList.innerHTML = ''
 		data.forEach(el => {
-			$contactList.insertAdjacentHTML('afterbegin', `
-		<li id="${el.id}"   class="list-group-item d-flex justify-content-between">
-			<div class="list-left">
-				<span>Имя: <strong>${el.name}</strong></span>
-				<span>Телефон: ${el.phone}</span>
-				<span>E-mail: ${el.email}</span>
-			</div>	
-			<div class="list-right">
-				<button class="btn btn-primary btn_like">
-				<i class="fa fa-heart" aria-hidden="true"></i>
-				<input id="id-${el.id}" type="checkbox" class="checkbox_like" ${el.like == true ? 'checked' : ''}>
-				<label for="id-${el.id}"></label>
-				</button>
-				<button class="btn btn-warning btn_edit"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-				<button class="btn btn-danger btn_delete"><i class="fa fa-trash-o"></i></button>
+			$postList.insertAdjacentHTML('afterbegin', `
+			<div class="col-4" id="${el.id}">
+			<div class="instagram-card">
+				<div class="instagram-card-header">
+					<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png"
+						class="instagram-card-user-image" />
+					<a class="instagram-card-user-name" href="#"></a>
+					<div class="instagram-card-time">58 min</div>
+				</div>
+
+				<div class="intagram-card-image">
+					<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png" height="600px" />
+				</div>
+				<div class="instagram-card-content">
+				<div class="icon_block">
+					<button class="btn_like"><i class="fa fa-heart-o"></i></button>
+					<button class="btn_delete"><i class="fa fa-trash-o"></i></button>
+					</div>
+					<h3>${el.postname}</h3>
+					<p>${el.text}</p>
+				</div>
 			</div>
-		</li>		
+		</div>	
 	`)
 		});
 
@@ -112,13 +116,14 @@ $(document).ready(function () {
 	let $modalDel = document.querySelector('#modal_delete')
 	let $btnYes = document.querySelector('.btn_yes')
 
-	$contactList.addEventListener('click', (e) => {
-		console.log(e.target.childNodes[0])
+	$postList.addEventListener('click', (e) => {
+
 	
-		if (e.target.classList.contains('btn_delete')) {
-	
+		if (e.target.classList.contains('fa-trash-o')) {
+			console.log(e.target.parentNode.parentNode.parentNode.parentNode)
 			$modalDel.style.display = 'block'
 			let index = e.target.parentNode.parentNode.id
+			
 			$btnYes.setAttribute('id', index)
 		} else if(e.target.classList.contains('fa-trash-o')){
 			$modalDel.style.display = 'block'
