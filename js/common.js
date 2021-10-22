@@ -4,12 +4,29 @@ $(document).ready(function () {
 	let $inputs = document.querySelectorAll('.form_block .form-control')
 	let $postList = document.querySelector('.post_list')
 	let page = 1
-	let pageCount = 1	
+	let pageCount = 1
 	let API = `http://localhost:8000/posts`
 
+	getPagination()
 	render()
-	getPagination('http://localhost:8000/posts')
 
+	let fileVal = null
+	$inputs[1].addEventListener('change', () => {
+		let fReader = new FileReader()
+		fReader.readAsDataURL($inputs[1].files[0])
+
+		fReader.onloadend = function (event) {
+
+			fileVal = event.target.result
+			console.log(fileVal)
+		}
+	})
+
+	let hour = null
+	let minute = null
+	let now = new Date();
+	let clickHours = now.getHours()
+	let clickMinute = now.getMinutes()	
 	$btn.addEventListener('click', () => {
 		// ВАЛИДАЦИЯ
 		$inputs.forEach(el => {
@@ -35,14 +52,22 @@ $(document).ready(function () {
 		})
 
 		if ($inputs[0].value && $inputs[1].value && $inputs[2].value) {
-			// СОЗДАТЬ ОБЪЕКТ, ЕСЛИ ВСЕ ПОЛЯ ЗАПОЛНЕННЫ
+
+
+
+
+
 			let obj = {
 				postname: $inputs[0].value,
-				file: $inputs[1].value,
+				file: fileVal,
 				text: $inputs[2].value
 			}
 			console.log(obj)
 			postData(obj)
+
+			// СОЗДАТЬ ОБЪЕКТ, ЕСЛИ ВСЕ ПОЛЯ ЗАПОЛНЕННЫ
+
+
 
 
 
@@ -71,34 +96,41 @@ $(document).ready(function () {
 			},
 		}).then(() => {
 			render()
-	
+			getPagination()
 		})
 	}
 
 	//РЕНДЕР
 
+
+
 	async function render() {
-		let res = await fetch(API)
+		let res = await fetch(`${API}?_limit=3&_page=${page}`)
 		let data = await res.json()
 
 		$postList.innerHTML = ''
 		data.forEach(el => {
 			$postList.insertAdjacentHTML('afterbegin', `
-			<div class="col-4" >
+			<div class="col-md-4 col-sm-6  col-xs-12" >
 			<div class="instagram-card" id="${el.id}">
 				<div class="instagram-card-header">
-					<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png"
+					<img src="${el.file}"
 						class="instagram-card-user-image" />
-					<a class="instagram-card-user-name" href="#"></a>
-					<div class="instagram-card-time">58 min</div>
+						<div class="instagram-card-time"></div>
 				</div>
 
 				<div class="intagram-card-image">
-					<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png" height="600px" />
+					<img src="${el.file}" alt="alt" />
 				</div>
 				<div class="instagram-card-content">
 				<div class="icon_block">
-					<button class="btn_like"><i class="fa fa-heart-o"></i></button>
+					<button class="btn_like"><i class="fa fa-heart-o"></i>
+			
+		
+	
+					</button>
+				
+					<button class="btn_edit"><i class="fa fa-pencil"></i></button>
 					<button class="btn_delete"><i class="fa fa-trash-o"></i></button>
 					</div>
 					<h3>${el.postname}</h3>
@@ -107,9 +139,13 @@ $(document).ready(function () {
 			</div>
 		</div>	
 	`)
+	
 		});
 
+
 	}
+
+
 
 
 	//УДАЛЕНИЕ КОНТАКТА
@@ -118,24 +154,23 @@ $(document).ready(function () {
 
 	$postList.addEventListener('click', (e) => {
 
-	
+
 		if (e.target.classList.contains('fa-trash-o')) {
-		
+
 			$modalDel.style.display = 'block'
 			let index = e.target.parentNode.parentNode.parentNode.parentNode.id
-			
+
 			$btnYes.setAttribute('id', index)
 		}
 	})
 
 	function deleteData(id) {
-		console.log(id);
 		fetch(`${API}/${id}`, {
 			method: 'DELETE',
 		}).then(() => {
-			
 			render()
-		
+			page = page-1
+			getPagination()
 		})
 	}
 
@@ -154,70 +189,86 @@ $(document).ready(function () {
 		$modalDel.style.display = 'none'
 	})
 
+
+
+
 	//РЕДАКТИРОВАНИЕ
-	$contactList.addEventListener('click', (e) => {
-		if (e.target.classList.contains('btn_edit')) {
+	$postList.addEventListener('click', (e) => {
+		if (e.target.classList.contains('fa-pencil')) {
 			let $modal = document.querySelector('#modal_edit')
 			$modal.style.display = 'block'
-			let index = e.target.parentNode.parentNode.id
+			let index = e.target.parentNode.parentNode.parentNode.parentNode.id
 			console.log(index)
-			let $inputsEdit = document.querySelectorAll('#modal_edit input.form-control')
+			let $inputsEdit = document.querySelectorAll('#modal_edit .form-control')
+			console.log($inputsEdit[2].value)
 			$inputsEdit.forEach(el => {
 				el.setAttribute('id', index)
 			})
 			fetch(API).then(res => res.json())
 				.then(data => {
-					$inputsEdit[0].value = data[index - 1].name
-					$inputsEdit[1].value = data[index - 1].phone
-					$inputsEdit[2].value = data[index - 1].email
+
+					$inputsEdit[0].value = data[index - 1].postname
+					$inputsEdit[1].value = data[index - 1].image
+					$inputsEdit[2].value = data[index - 1].text
 				})
 
 		}
 	})
 
 
-	function editData(id, contactItem) {
+	function editData(id, postItem) {
 		fetch(`${API}/${id}`, {
 			method: 'PATCH',
-			body: JSON.stringify(contactItem),
+			body: JSON.stringify(postItem),
 			headers: {
 				'Content-Type': 'application/json;charset=utf-8',
 			}
-		}).then(() => render(`${API}?_limit=3&_page=${page}`))
+		}).then(() => render())
 	}
 	let $btnSave = document.querySelector('.btn_save')
 	let $inputsEdit = document.querySelectorAll('#modal_edit input.form-control')
+	let fileEditVal = null
+	$inputsEdit[1].addEventListener('change', () => {
+		let fReader = new FileReader()
+		fReader.readAsDataURL($inputsEdit[1].files[0])
+
+		fReader.onloadend = function (event) {
+
+			fileEditVal = event.target.result
+			console.log(fileEditVal)
+		}
+	})
 	$btnSave.addEventListener('click', () => {
 		$inputsEdit.forEach(el => {
-			if (el.getAttribute('name') === 'Имя' && !el.value.trim() && !el.nextElementSibling) {
+			if (el.getAttribute('name') === 'username' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `			
 					<div class="alert alert-danger" role="alert">
-						Введите имя					
+						Введите название					
 					</div>					
 					`)
-			} else if (el.getAttribute('name') === 'Телефон' && !el.value.trim() && !el.nextElementSibling) {
+			} else if (el.getAttribute('name') === 'image' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `	
 				<div class="alert alert-danger" role="alert">
-					Введите телефон			
+					Загрузите изображение			
 				</div>					
 				`)
-			} else if (el.getAttribute('name') === 'E-mail' && !el.value.trim() && !el.nextElementSibling) {
+			} else if (el.getAttribute('name') === 'textarea' && !el.value.trim() && !el.nextElementSibling) {
 				el.insertAdjacentHTML('afterend', `		
 				<div class="alert alert-danger" role="alert">
-					Введите e-mail			
+					Введите текст		
 				</div>					
 				`)
 			}
 		})
 		if ($inputsEdit[0].value && $inputsEdit[1].value && $inputsEdit[2].value) {
 			let index = $inputsEdit[0].id
-			let newContact = {
-				name: $inputsEdit[0].value,
-				phone: $inputsEdit[1].value,
-				email: $inputsEdit[2].value
+			let newPost = {
+				postname: $inputsEdit[0].value,
+				file: fileEditVal,
+				text: $inputsEdit[2].value
 			}
 			let $modal = document.querySelector('#modal_edit')
-			editData(index, newContact)
+			editData(index, newPost)
 			$modal.style.display = 'none'
 		}
 
@@ -233,104 +284,108 @@ $(document).ready(function () {
 		$modal.style.display = 'none'
 	})
 
-	let $searchInp = document.querySelector('.search_block input')
-	$searchInp.addEventListener('input', (e) => {
-		let inpValue = e.target.value.trim()	
-		getPagination(`${API}?q=${inpValue}`)
-		if(!$searchInp.value.trim()){
-			render(`${API}?_limit=3&_page=1`)
-		} else {
-			page = 1
-			render(`${API}/?_limit=3&_page=1&q=${inpValue}`)
-		}		
-
-	})
-
 	const prevPagiBtn = document.querySelector('.previous-btn')
 	const nextPagiBtn = document.querySelector('.next-btn')
 
-	function getPagination(url) {
-		fetch(url)
-		.then(res => res.json())
-		.then(data => {
-			console.log(data)
-			pageCount = Math.ceil(data.length / 3)
-			$('.pagination-page').remove()
-			for(let i = pageCount; i >= 1; i--) {
-				prevPagiBtn.insertAdjacentHTML('afterend',`
+	function getPagination() {
+		fetch(API)
+			.then(res => res.json())
+			.then(data => {
+				console.log(data)
+				pageCount = Math.ceil(data.length / 3)
+				$('.pagination-page').remove()
+				for (let i = pageCount; i >= 1; i--) {
+					prevPagiBtn.insertAdjacentHTML('afterend', `
 					<span class="pagination-page">
-						<button class="btn btn-outline-success">${i}</button>
+						<button class="btn btn-outline-primary">${i}</button>
 					</span>
 				`)
-			}
-			prevPagiBtn.nextElementSibling.childNodes[1].classList.add('btn-success')
-		})	
+				}
+				prevPagiBtn.nextElementSibling.childNodes[1].classList.add('btn-primary')
+			})
 	}
 
 
-	
+
 	nextPagiBtn.addEventListener('click', () => {
-		if(page >= pageCount) return
+
+		if (page >= pageCount) return
 		page++
-		if(!$searchInp.value.trim()){
-			render(`${API}?_limit=3&_page=${page}`)
-		} else {
-			render(`${API}?_limit=3&_page=${page}&q=${$searchInp.value}`)
-		}
-	
+
+		render()
 		document.querySelectorAll('.pagination-page').forEach(el => {
-			el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-success') : el.childNodes[1].classList.remove('btn-success')
-		})	
+			el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-primary') : el.childNodes[1].classList.remove('btn-primary')
+		})
+
 	})
 
 	prevPagiBtn.addEventListener('click', () => {
-		if(page <= 1) return
+		if (page <= 1) return
 		page--
-		if(!$searchInp.value.trim()){
-			render(`${API}?_limit=3&_page=${page}`)
-		} else {
-			render(`${API}?_limit=3&_page=${page}&q=${$searchInp.value}`)
-		}		
-		
+
+		render()
 		document.querySelectorAll('.pagination-page').forEach(el => {
-			el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-success') : el.childNodes[1].classList.remove('btn-success')
-		})	
+			el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-primary') : el.childNodes[1].classList.remove('btn-primary')
+		})
+
 	})
 
 	document.body.addEventListener('click', (e) => {
-		if(e.target.parentNode.classList.contains('pagination-page')){
+		if (e.target.parentNode.classList.contains('pagination-page')) {
 			page = e.target.innerText
-			if(!$searchInp.value.trim()){
-				render(`${API}?_limit=3&_page=${page}`)
-			} else {
-				render(`${API}?_limit=3&_page=${page}&q=${$searchInp.value}`)
-			}				
+			render()
 			document.querySelectorAll('.pagination-page').forEach(el => {
-				el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-success') : el.childNodes[1].classList.remove('btn-success')
-			})			
+				el.childNodes[1].innerText == page ? el.childNodes[1].classList.add('btn-primary') : el.childNodes[1].classList.remove('btn-primary')
+			})
 		}
 	})
 
-	$contactList.addEventListener('change', (e) => {
-		let index = e.target.parentNode.parentNode.parentNode.id
-		console.log(index)
-		let newLike = {}
-		if(e.target.checked){
-			 newLike = {
-				like: true
-			}
+	let $searchInp = document.querySelector('.search_block input')
+	$searchInp.addEventListener('input', (e) => {
+		
+		let inpValue = e.target.value.trim()
+		if(!e.target.value.trim()) {
+			$('.btn_wrap button,.btn_wrap span').show()
+			render()
 		} else {
-			newLike = {
-				like: false
-			}		
+			$('.btn_wrap button,.btn_wrap span').hide()
+			fetch(`${API}?q=${inpValue}`)
+			.then((res) => res.json())
+			.then((data) => {
+
+				$postList.innerHTML = ''
+				data.forEach(el => {
+					$postList.insertAdjacentHTML('afterbegin', `
+				<div class="col-4" >
+				<div class="instagram-card" id="${el.id}">
+					<div class="instagram-card-header">
+						<img src="https://cs4.pikabu.ru/post_img/2016/06/25/7/1466849861168796736.png"
+							class="instagram-card-user-image" />
+					</div>
+					<div class="intagram-card-image">
+						<img src="${el.file}" alt="alt" />
+					</div>
+					<div class="instagram-card-content">
+					<div class="icon_block">
+						<button class="btn_like"><i class="fa fa-heart-o"></i>	
+						</button>		
+						<button class="btn_edit"><i class="fa fa-pencil"></i></button>
+						<button class="btn_delete"><i class="fa fa-trash-o"></i></button>
+						</div>
+						<h3>${el.postname}</h3>
+						<p>${el.text}</p>
+					</div>
+				</div>
+			</div>	
+		`)
+				});
+
+			})
 		}
-		editData(index, newLike)
+
 	})
 
-	let $btnFilter = document.querySelector('.btn_sort_like')
-	$btnFilter.addEventListener('click', () => {
-		render(`${API}?_limit=3&_page=${page}&like=true`)
-	})
+
 
 
 })

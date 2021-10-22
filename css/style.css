@@ -3,8 +3,8 @@
 }
 body{
 	background-color: #fafafa;
-	padding: 60px;
 	font-family: 'Droid Sans', sans-serif;
+	padding-bottom: 100px;
 
 }
 
@@ -100,7 +100,8 @@ hr{
 }
 .intagram-card-image img {
 	max-width: 100%;
-	height: auto;
+	height: 250px;
+	object-fit: cover;
 }
 .alert-danger {
 	color: #721c24;
@@ -152,4 +153,57 @@ button{
   background-color: #ffffff;
   margin: auto;
   text-align: center;
+}
+.btn_wrap .btn-primary{
+	color: #fff  !important;
+}
+.pagination-page{
+	margin: 0 10px;
+}
+.likes{
+  cursor: pointer;
+}
+.modal{
+	background-color: rgba(0,0,0,.5);
+}
+#modal_edit .modal-dialog{
+	max-width: 1000px;
+}
+.btn_wrap {
+	margin-top: 50px;
+}
+.logo{
+  display: flex;
+  background-color: rgb(204, 189, 204);
+  max-width: 150px;
+  padding: 15px;
+  border-radius: 10px;
+  
+}
+
+.instDiv{
+  font-family: "Lobster";
+  font-weight: 400;
+  margin-left: 10px;
+  font-size: 18px;
+}
+.logo{
+	margin: 0 auto;
+	margin-top: 50px;
+}
+@media only screen and (max-width: 480px) {
+	.previous-btn,
+	.next-btn {
+	display: none;
+	}
+	.btn_wrap.d-flex.justify-content-center{
+		padding-top: 40px;
+	}
+	.instagram-card{
+		margin-bottom: 20px;
+	}
+	.custom-file .alert-danger {
+    left: 0;
+    width: 208px;
+}
 }
