@@ -23,7 +23,6 @@ a{
 
 .instagram-card-header{
 	padding: 20px;
-	height: 40px;
 }
 
 .instagram-card-user-image{
@@ -99,4 +98,8 @@ hr{
 }
 .header{
 	padding: 50px 0;
+}
+.intagram-card-image img {
+	max-width: 100%;
+	height: auto;
 }

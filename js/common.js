@@ -2,7 +2,7 @@
 $(document).ready(function () {
 	let $btn = document.querySelector('.btn')
 	let $inputs = document.querySelectorAll('.form_block input.form-control')
-	let $contactList = document.querySelector('.contact_list')
+	let $contactList = document.querySelector('.post_list')
 	let page = 1
 	let pageCount = 1	
 	let API = `http://localhost:8000/contacts`
